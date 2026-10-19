@@ -73,6 +73,9 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 #labels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .lb{border:1px dashed #999;padding:6px;text-align:center;font-size:11px;page-break-inside:avoid;background:#fff;color:#000}
 .lb .q{display:flex;justify-content:center;margin-bottom:4px}
+.guide ol,.guide ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.guide p{margin:0}
+.gt{width:100%;border-collapse:collapse;font-size:15px}.gt th,.gt td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}.gt th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 @media print{body{padding:0;background:#fff}.np,nav.tabs{display:none!important}.wrap{max-width:none;padding:0}#v-label{display:block!important}}
 </style>
 </head>
@@ -87,6 +90,7 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
     <button class="primary big" id="b-login">Entra</button>
     <div id="l-err" class="msg err" hidden></div>
   </div>
+  <button id="b-guide-open">📖 Guida vendita e incasso</button>
   <p class="muted">Installa l'app: Android → menu ⋮ → Installa app. iPhone → Condividi → Aggiungi alla schermata Home.</p>
 </div>
 
@@ -134,10 +138,98 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
   </div>
 </div>
 
+  <!-- guida -->
+  <div class="wrap guide" id="v-guide" hidden>
+    <div class="card">
+      <h2>Come funziona</h2>
+      <p>Il cliente prenota online, paga e ritira solo in palestra. Online non si paga nulla.</p>
+      <ol>
+        <li>Il cliente prenota dal catalogo online (capo, taglia) e riceve un codice, es. <b>EF1019-AB12</b>.</li>
+        <li>Il capo resta bloccato <b>7 giorni</b>. Se non viene ritirato, la prenotazione scade da sola e il capo torna disponibile.</li>
+        <li>In reception il cliente mostra il codice, paga e ritira.</li>
+        <li>Capo preso dal corner senza prenotazione: <b>Vendita banco</b>.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>Incasso passo passo</h2>
+      <ol>
+        <li>Apri <b>Scanner</b>.</li>
+        <li>Scansiona il QR del capo, oppure scrivi il codice prenotazione del cliente e premi Invio.</li>
+        <li>Controlla con il cliente capo, taglia e prezzo <b>prima</b> di incassare.</li>
+        <li>Scegli il metodo in alto: <b>SumUp</b>, <b>Contanti</b> o <b>PayPal</b>.</li>
+        <li>Incassa l'importo esatto mostrato dall'app. Prezzi solo da catalogo.</li>
+        <li>Premi <b>Pagato e consegnato a…</b> (con prenotazione) oppure <b>Vendita banco</b> (senza), poi conferma. L'app scala lo stock e registra metodo, importo e operatore.</li>
+        <li>Compila la ricevuta dal blocchetto numerato merch: data, cliente, articolo, taglia, importo, metodo. Originale al cliente, matrice nel blocchetto.</li>
+        <li>Consegna il capo.</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>Metodi di pagamento</h2>
+      <table class="gt">
+        <tr><th>Metodo</th><th>Come</th></tr>
+        <tr><td><b>SumUp</b></td><td>Transazione separata dall'abbonamento. Descrizione: "MERCH + articolo".</td></tr>
+        <tr><td><b>Contanti</b></td><td>Resto esatto. Soldi nella busta/cassetta merch, mai nella cassa generale.</td></tr>
+        <tr><td><b>PayPal immediato</b></td><td>Verso l'account PayPal Effestudio, nota "Merch + nome cliente". Consegna solo dopo aver visto il pagamento ricevuto.</td></tr>
+      </table>
+      <p class="muted">Fine turno: conta i contanti merch e confrontali con le vendite in contanti del giorno (Prenotazioni → Ultime chiuse).</p>
+    </div>
+    <div class="card">
+      <h2>Ricevuta</h2>
+      <ul>
+        <li>Ogni vendita merch ha la sua ricevuta dal blocchetto numerato, anche se il cliente non la chiede.</li>
+        <li>Mai strappare o saltare numeri. Errore: barra la ricevuta, scrivi "ANNULLATA", lasciala nel blocchetto.</li>
+        <li>La ricevuta merch non vale per l'abbonamento: due documenti separati.</li>
+        <li>Blocchetto finito: consegnalo ad Andrea.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Pre-order Hyrox</h2>
+      <ul>
+        <li>Non è in magazzino: si ordina su richiesta. Non passa dall'app.</li>
+        <li>Il cliente sceglie articolo e taglia dal campione esposto o dal catalogo.</li>
+        <li>Pagamento in palestra all'ordine, con ricevuta segnata "PRE-ORDER".</li>
+        <li>Tempi di consegna: comunica solo la data indicata da Andrea.</li>
+        <li>All'arrivo: avvisa il cliente e consegna.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Cambi, errori, domande</h2>
+      <table class="gt">
+        <tr><th>Situazione</th><th>Cosa fare</th></tr>
+        <tr><td>Taglia sbagliata, capo non usato con cartellino</td><td>Cambio con stessa linea e prezzo, se disponibile.</td></tr>
+        <tr><td>Cliente vuole il rimborso</td><td>Non rimborsare: passa la richiesta ad Andrea.</td></tr>
+        <tr><td>Capo prenotato non trovato</td><td>Non vendere un sostituto: avvisa Andrea e il cliente.</td></tr>
+        <tr><td>Importo incassato sbagliato</td><td>Avvisa Andrea in giornata.</td></tr>
+        <tr><td>"Posso pagare online?"</td><td>No, si paga solo in palestra.</td></tr>
+        <tr><td>Taglie diverse o personalizzazioni</td><td>Prendi nome e richiesta, gira ad Andrea.</td></tr>
+        <tr><td>Fotocamera non si apre</td><td>Consenti la fotocamera al browser, oppure usa "Foto".</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Cosa non fare</h2>
+      <ul>
+        <li>Consegnare un capo senza averlo incassato.</li>
+        <li>Incassare merch e abbonamento nella stessa transazione SumUp.</li>
+        <li>Vendere senza ricevuta o senza registrare in app.</li>
+        <li>Sconti, omaggi o "pago la prossima volta" senza ok di Andrea.</li>
+        <li>Lasciare i contanti merch nella cassa generale.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Installare l'app</h2>
+      <ul>
+        <li>Android: apri il link con Chrome → menu ⋮ → Installa app.</li>
+        <li>iPhone: apri il link con Safari → Condividi → Aggiungi alla schermata Home.</li>
+      </ul>
+      <button id="b-guide-back" hidden>← Torna all'accesso</button>
+    </div>
+  </div>
+
 <nav class="tabs np" id="tabs" hidden>
   <button data-v="scan" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg>Scanner</button>
   <button data-v="pren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Prenotazioni</button>
   <button data-v="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8ZM7.5 7.5h.01"/></svg>Etichette</button>
+  <button data-v="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5ZM8 7h8M8 11h6"/></svg>Guida</button>
   <button data-v="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Dashboard</button>
 </nav>
 
@@ -170,7 +262,7 @@ $("b-logout").onclick=()=>{store("mm-pin",null);stopLive();location.reload()};
 /* ---------- navigazione ---------- */
 function show(v){
   if(v==="dash"){location.href="dashboard.html";return}
-  ["scan","pren","label"].forEach(k=>$("v-"+k).hidden=k!==v);
+  ["scan","pren","label","guide"].forEach(k=>$("v-"+k).hidden=k!==v);
   document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===v?"page":"false"));
   if(v!=="scan")stopLive();
   if(v==="pren")loadPren();
@@ -269,11 +361,17 @@ $("b-gen").onclick=async()=>{
 };
 $("b-print").onclick=()=>window.print();
 
+/* ---------- guida senza accesso ---------- */
+function guideOut(){$("v-login").hidden=true;$("v-app").hidden=true;$("v-guide").hidden=false;$("b-guide-back").hidden=false;window.scrollTo(0,0)}
+$("b-guide-open").onclick=guideOut;
+$("b-guide-back").onclick=()=>{$("v-guide").hidden=true;$("b-guide-back").hidden=true;$("v-login").hidden=false;history.replaceState(null,"",location.pathname)};
+
 /* ---------- avvio ---------- */
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
 const sp=load("mm-pin"),so=load("mm-op");
 if(so)$("l-op").value=so;
-if(sp){$("v-login").hidden=true;login(sp,so,true)}
+if(location.hash==="#guida"&&!sp)guideOut();
+else if(sp){$("v-login").hidden=true;login(sp,so,true).then(()=>{if(location.hash==="#guida"&&!$("v-app").hidden)show("guide")})}
 </script>
 </body>
 </html>

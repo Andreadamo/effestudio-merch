@@ -1,5 +1,5 @@
 // Merch staff: guscio dell'app in cache, dati sempre dalla rete
-const CACHE = 'merch-v3';
+const CACHE = 'merch-v4';
 const SHELL = ['./staff.html', './dashboard.html', './index.html', 'config.js', 'api.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png'];
 

@@ -230,7 +230,6 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
   <button data-v="pren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Prenotazioni</button>
   <button data-v="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8ZM7.5 7.5h.01"/></svg>Etichette</button>
   <button data-v="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5ZM8 7h8M8 11h6"/></svg>Guida</button>
-  <button data-v="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Dashboard</button>
 </nav>
 
 <dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
@@ -261,7 +260,6 @@ $("b-logout").onclick=()=>{store("mm-pin",null);stopLive();location.reload()};
 
 /* ---------- navigazione ---------- */
 function show(v){
-  if(v==="dash"){location.href="dashboard.html";return}
   ["scan","pren","label","guide"].forEach(k=>$("v-"+k).hidden=k!==v);
   document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-current",b.dataset.v===v?"page":"false"));
   if(v!=="scan")stopLive();

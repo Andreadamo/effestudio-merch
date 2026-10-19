@@ -1,7 +1,7 @@
 /***** API JSON per le pagine merch su GitHub (andreadamo.github.io/effestudio-merch) *****/
 const MERCH_TZ = 'Europe/Rome';
 const MERCH_API_FN = ['api_catalogo', 'api_riserva', 'api_login', 'api_prenotazioni', 'api_stato',
-  'api_cerca', 'api_vendiBanco', 'api_etichette', 'api_dashboard'];
+  'api_cerca', 'api_vendiBanco', 'api_etichette', 'api_dashboard', 'api_adminLogin'];
 
 function doPost(e) {
   let out;
@@ -68,9 +68,26 @@ function api_cerca(pin, codice) { return scan_cerca(pin, codice); }
 function api_vendiBanco(pin, id, operatore, metodo) { return scan_vendiBanco(pin, id, operatore, metodo); }
 function api_etichette(pin) { return scan_etichette(pin); }
 
-/* ---------- dashboard di controllo ---------- */
+/* ---------- PIN amministrazione: lo stesso di EffeOre, letto dal suo foglio Config ---------- */
+const HUB_EFFEORE_SS = '1k9yNCids2i18RNjSpMzizHQj-Mk_dt_7V-GkY-6MnYE';
+function hubAdminOk_(pin) {
+  const p = String(pin || '').trim();
+  if (!p) return false;
+  const c = CacheService.getScriptCache();
+  let ref = c.get('hub_admin_pin');
+  if (!ref) {
+    const v = SpreadsheetApp.openById(HUB_EFFEORE_SS).getSheetByName('Config').getDataRange().getDisplayValues();
+    for (let i = 0; i < v.length; i++) if (String(v[i][0]).trim() === 'PIN amministrazione') { ref = String(v[i][1]).trim(); break; }
+    if (ref) c.put('hub_admin_pin', ref, 600);
+  }
+  return !!ref && p === ref;
+}
+function hubAdmin_(pin) { if (!hubAdminOk_(pin)) throw new Error('PIN amministrazione non valido.'); }
+function api_adminLogin(pin) { hubAdmin_(pin); return true; }
+
+/* ---------- dashboard di controllo (solo amministrazione) ---------- */
 function api_dashboard(pin) {
-  checkPin_(pin);
+  hubAdmin_(pin);
   const ss = scan_ss_();
   const inv = ss.getSheetByName(SC_INV).getDataRange().getValues().slice(1).filter(function (r) { return r[0]; })
     .map(function (r) {

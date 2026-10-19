@@ -171,7 +171,10 @@ function openForm(t){
 }
 function setData(d){items=d;Object.keys(sel).forEach(k=>{const n=items.find(i=>sel[k]&&i.id===sel[k].id);sel[k]=n&&n.disp>0?n:undefined});render()}
 function loadCat(){
-  run('api_catalogo').then(setData).catch(e=>{$('#grid').innerHTML='<div class="empty">Catalogo non raggiungibile: '+esc(e.message)+'</div>'});
+  let cached=null;try{cached=JSON.parse(load('merch-cat')||'null')}catch(e){}
+  if(cached&&!items.length)setData(cached);
+  run('api_catalogo').then(d=>{store('merch-cat',JSON.stringify(d));setData(d)})
+    .catch(e=>{if(!items.length)$('#grid').innerHTML='<div class="empty">Catalogo non raggiungibile: '+esc(e.message)+'</div>'});
 }
 loadCat();
 </script>

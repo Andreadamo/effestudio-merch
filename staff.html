@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="dns-prefetch" href="https://script.googleusercontent.com">
 <meta name="theme-color" content="#141414">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -77,6 +80,14 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 .guide p{margin:0}
 .gt{width:100%;border-collapse:collapse;font-size:15px}.gt th,.gt td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}.gt th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 @media print{body{padding:0;background:#fff}.np,nav.tabs{display:none!important}.wrap{max-width:none;padding:0}#v-label{display:block!important}}
+
+/* fluidità touch (Android/iOS) */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+*{-webkit-tap-highlight-color:transparent}
+button,a,select,label,summary,[role=button]{touch-action:manipulation}
+button:not(:disabled):active{opacity:.75}
+@media (pointer:coarse){input,select,textarea{font-size:16px!important}}
+img{max-width:100%}
 </style>
 </head>
 <body>
@@ -249,14 +260,18 @@ function ask(html,okLabel,cls){return new Promise(res=>{
   $("d-no").onclick=()=>{$("dlg").close();res(false)};$("d-ok").onclick=()=>{$("dlg").close();res(true)};$("dlg").showModal();})}
 
 /* ---------- accesso ---------- */
+function enterApp(pin,op){S.pin=pin;S.op=op||"staff";$("v-login").hidden=true;$("v-app").hidden=false;$("tabs").hidden=false;$("who").textContent="Operatore: "+S.op;show("scan")}
 async function login(pin,op,silent){
-  try{await run("api_login",pin);S.pin=pin;S.op=op||"staff";store("mm-pin",pin);store("mm-op",S.op);
-    $("v-login").hidden=true;$("v-app").hidden=false;$("tabs").hidden=false;$("who").textContent="Operatore: "+S.op;show("scan");}
-  catch(e){if(!silent){$("l-err").textContent=e.message;$("l-err").hidden=false}else{$("v-login").hidden=false}}
+  // con PIN già salvato l'app si apre subito; la verifica sul server avviene in sottofondo
+  if(silent){enterApp(pin,op);
+    try{await run("api_login",pin)}catch(e){if(/PIN/i.test(e.message)){store("mm-pin",null);store("mm-pren",null);$("v-app").hidden=true;$("tabs").hidden=true;$("v-login").hidden=false}}
+    return}
+  try{await run("api_login",pin);store("mm-pin",pin);store("mm-op",op||"staff");enterApp(pin,op)}
+  catch(e){$("l-err").textContent=e.message;$("l-err").hidden=false}
 }
 $("b-login").onclick=()=>login($("l-pin").value.trim(),$("l-op").value.trim());
 $("l-pin").onkeydown=e=>{if(e.key==="Enter")$("b-login").click()};
-$("b-logout").onclick=()=>{store("mm-pin",null);stopLive();location.reload()};
+$("b-logout").onclick=()=>{store("mm-pin",null);store("mm-pren",null);stopLive();location.reload()};
 
 /* ---------- navigazione ---------- */
 function show(v){
@@ -321,11 +336,11 @@ async function vendiBanco(){
 
 /* ---------- prenotazioni ---------- */
 async function loadPren(){
-  $("aperte").innerHTML='<div class="muted">Caricamento…</div>';
-  try{S.pren=await run("api_prenotazioni",S.pin);renderPren()}catch(e){$("aperte").innerHTML="";msg(e.message)}
+  // mostra subito l'ultimo elenco salvato, poi lo aggiorna dal server
+  let c=null;try{c=JSON.parse(load("mm-pren")||"null")}catch(_){}
+  if(c&&!S.pren){S.pren=c;renderPren()}else if(!S.pren)$("aperte").innerHTML='<div class="muted">Caricamento…</div>';
+  try{S.pren=await run("api_prenotazioni",S.pin);store("mm-pren",JSON.stringify(S.pren));renderPren()}catch(e){if(!S.pren)$("aperte").innerHTML="";msg(e.message)}
 }
-$("b-ref").onclick=loadPren;
-$("q").oninput=e=>{S.q=e.target.value.toLowerCase();renderPren()};
 function scad(p){const g=S.pren.scadenzaGg||7;const left=Math.ceil((new Date(p.data).getTime()+g*864e5-Date.now())/864e5);return left}
 function renderPren(){
   if(!S.pren)return;

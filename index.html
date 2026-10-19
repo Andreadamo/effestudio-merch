@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+<link rel="dns-prefetch" href="https://script.googleusercontent.com">
 <title>Merch Effestudio</title>
 <link rel="icon" type="image/png" href="icons/favicon-32.png">
 <meta name="theme-color" content="#000000">
@@ -67,6 +70,14 @@ input,select{width:100%;padding:11px;border:1.5px solid var(--line);font:16px Ba
 .ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
 .code{font:800 42px "Barlow Condensed",sans-serif;background:var(--soft);padding:10px;text-align:center;margin:12px 0;letter-spacing:1px}
 .err{color:var(--err);font-size:14px;min-height:20px;margin-top:8px}
+
+/* fluidità touch (Android/iOS) */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+*{-webkit-tap-highlight-color:transparent}
+button,a,select,label,summary,[role=button]{touch-action:manipulation}
+button:not(:disabled):active{opacity:.75}
+@media (pointer:coarse){input,select,textarea{font-size:16px!important}}
+img{max-width:100%}
 </style>
 </head>
 <body>
